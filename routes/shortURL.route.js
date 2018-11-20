@@ -5,6 +5,6 @@ const router = express.Router();
 const shortURL_controller = require('../controllers/shortURL.controller');
 
 //url-shortener endpoint
-router.post("/new", shortURL_controller.send_short_url);
+router.post("/new", shortURL_controller.search_original_url);
 
 module.exports = router;
