@@ -1,14 +1,14 @@
 var mongoose = require('mongoose');
-
 var Schema = mongoose.Schema;
 
 var shortURLSchema = new Schema({
-    target_URL: String,
-    id: Number
+    original_URL: String,
+    short_URL: Number
 });
 
-var ShortURLModel = mongoose.model('ShortURLModel', ShortURLSchema);
+module.exports = mongoose.model('ShortURL', ShortURLSchema);
 
+/*
 function getURLQuery(url){
     var query = ShortURLModel.find({target_URL: url});
     return query
@@ -22,3 +22,4 @@ module.exports = {
     ShortURLModel: ShortURLModel,
     getURLQuery: getURLQuery
 };
+*/
