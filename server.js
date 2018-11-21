@@ -3,6 +3,7 @@ const express = require('express');
 const app = express();
 require('dotenv').config();
 const bodyParser = require("body-parser");
+const dns = require('dns');
 
 //enables CORS
 const cors = require('cors');
