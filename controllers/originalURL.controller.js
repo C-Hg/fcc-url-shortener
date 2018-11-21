@@ -1,18 +1,30 @@
 const ShortURL = require('../models/shortURL.model');
 const dns = require('dns');
+const url = require('url');
 
 exports.evaluate_original_url = async function (req, res) {
-    //check if the url refers to a valid site
-    let isUrlValid = false;
+    //check if the url form is valid, transforms in hostname and checks if the url exists
+    let url = req.body.url;
+
+    if (!isUrlValid(url)) {
+        console.log("invalid url");
+        res.json({"error": "invalid url"});
+        return
+    }
+
+    let hostname = new URL(url).hostname;
+    console.log(hostname);
+    
+    let isDnsValid = false;
     try {
-    isUrlValid = await checkDns(req.body.url);
-    console.log(isUrlValid);
+        isDnsValid = await checkDns(hostname);
+    console.log(isDnsValid);
     } catch (e) {
         console.log('error while evaluating url');
     }
-    if (!isUrlValid) {
-        console.log("invalid url");
-        res.json({ "error": "invalid URL" });
+    if (!isDnsValid) {
+        console.log("dead link");
+        res.json({ "error": "the hostname cannot be resolved, check your url" });
         return
     }
 
@@ -39,6 +51,7 @@ exports.evaluate_original_url = async function (req, res) {
         }
     } catch (e) {
         console.log('error while counting documents in db')
+        return
     }
 };
 
@@ -75,4 +88,11 @@ create_and_display_new_url = function (req, res, count) {
         res.json({ 'original_url': req.body.url, 'short_url': newUrl.short_URL });
         console.log("New short URL added to database");
     })
+};
+
+function isUrlValid(url){
+    let regexp = /^https?:\/\/www\.\w+\.\w+|^https?:\/\/\w+\.\w+/;
+    let result = regexp.test(url);
+    console.log(result)
+    return result;
 };
