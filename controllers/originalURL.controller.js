@@ -3,9 +3,8 @@ const dns = require('dns');
 const url = require('url');
 
 exports.evaluate_original_url = async function (req, res) {
-    //check if the url form is valid, transforms in hostname and checks if the url exists
+    //check if the url form is valid, parses in hostname and checks if the hostname exists
     let url = req.body.url;
-
     if (!isUrlValid(url)) {
         console.log("invalid url");
         res.json({"error": "invalid url"});
@@ -13,20 +12,19 @@ exports.evaluate_original_url = async function (req, res) {
     }
 
     let hostname = new URL(url).hostname;
-    console.log(hostname);
     
-    let isDnsValid = false;
     try {
-        isDnsValid = await checkDns(hostname);
-    console.log(isDnsValid);
+        let isDnsValid = await checkDns(hostname);
+        if (!isDnsValid) {
+            console.log("dead link");
+            res.json({ "error": "the hostname cannot be resolved, check your url" });
+            return
+        }
     } catch (e) {
         console.log('error while evaluating url');
-    }
-    if (!isDnsValid) {
-        console.log("dead link");
-        res.json({ "error": "the hostname cannot be resolved, check your url" });
         return
     }
+    
 
     //check is the submitted url is already in the database
     let isInputUrlKnown = "";
@@ -55,20 +53,19 @@ exports.evaluate_original_url = async function (req, res) {
     }
 };
 
-function handleURLsearch(err, url_details) {
+function handleURLsearch(err) {
     if (err) return console.error(err);
-    return url_details;
 };
 
 function handleCount(err, count) {
     if (err) return err;
-    return count;
 }
 
 function checkDns(domain) {
     return new Promise(resolve => {
         dns.resolve(domain, function (err) {
             if (err) {
+                console.log(err.code);
                 resolve (false);
             }
             else {
@@ -91,7 +88,7 @@ create_and_display_new_url = function (req, res, count) {
 };
 
 function isUrlValid(url){
-    let regexp = /^https?:\/\/www\.\w+\.\w+|^https?:\/\/\w+\.\w+/;
+    let regexp = /^https?:\/\//;
     let result = regexp.test(url);
     console.log(result)
     return result;
