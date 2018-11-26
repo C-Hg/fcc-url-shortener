@@ -10,7 +10,7 @@ const cors = require('cors');
 app.use(cors({optionSuccessStatus: 200}));
 
 //serving public files
-app.use(express.static('public'));
+app.use('/public', express.static(process.cwd() + '/public'));
 
 //setting up bodyParser
 app.use(bodyParser.urlencoded({extended: false}));

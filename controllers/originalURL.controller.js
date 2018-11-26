@@ -90,6 +90,5 @@ create_and_display_new_url = function (req, res, count) {
 function isUrlValid(url){
     let regexp = /^https?:\/\//;
     let result = regexp.test(url);
-    console.log(result)
     return result;
 };
